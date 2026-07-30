@@ -12,7 +12,7 @@ class StoreStarshipRequest extends FormRequest
      */
     public function authorize(): bool
     {
-        return false;
+        return true;
     }
 
     /**
@@ -23,7 +23,10 @@ class StoreStarshipRequest extends FormRequest
     public function rules(): array
     {
         return [
-            //
+            'swapi_id' => ['nullable', 'integer', 'min:1', 'unique:starships,swapi_id'],
+            'name' => ['required', 'string', 'max:120'],
+            'max_atmosphering_speed' => ['required', 'integer', 'min:0'],
+            'cargo_capacity' => ['required', 'integer', 'min:0'],
         ];
     }
 }

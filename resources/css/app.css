@@ -6,4 +6,79 @@
 @theme {
     --font-sans: 'Instrument Sans', ui-sans-serif, system-ui, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji',
         'Segoe UI Symbol', 'Noto Color Emoji';
+    --color-space-950: #070a0d;
+    --color-space-900: #0b0e12;
+    --color-space-850: #0f1318;
+    --color-space-800: #13171d;
+    --color-space-700: #252b33;
+    --color-muted: #8b93a3;
+    --color-star: #f7c717;
+    --color-star-soft: #302b12;
+    --color-success: #16a66a;
+    --color-danger: #ff5757;
+}
+
+@layer base {
+    * {
+        box-sizing: border-box;
+    }
+
+    html {
+        background: var(--color-space-950);
+        color-scheme: dark;
+    }
+
+    body {
+        min-width: 320px;
+        min-height: 100vh;
+        margin: 0;
+        background: var(--color-space-950);
+        color: #f2f3f5;
+        font-family: var(--font-sans);
+        -webkit-font-smoothing: antialiased;
+    }
+
+    button,
+    input {
+        font: inherit;
+    }
+
+    button,
+    a {
+        -webkit-tap-highlight-color: transparent;
+    }
+}
+
+@layer components {
+    .page-title {
+        @apply text-4xl font-semibold tracking-tight text-white md:text-5xl;
+    }
+
+    .page-description {
+        @apply mt-6 max-w-4xl text-base leading-7 text-muted md:text-lg;
+    }
+
+    .panel {
+        @apply rounded-2xl border border-space-700 bg-space-850;
+    }
+
+    .btn-primary {
+        @apply inline-flex min-h-12 items-center justify-center rounded-xl bg-star px-6 font-semibold text-space-950 transition hover:bg-yellow-300 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-star;
+    }
+
+    .btn-secondary {
+        @apply inline-flex min-h-12 items-center justify-center rounded-xl border border-space-700 bg-space-850 px-6 font-semibold text-gray-200 transition hover:border-gray-500 hover:bg-space-800 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-star;
+    }
+
+    .btn-danger {
+        @apply inline-flex min-h-12 items-center justify-center rounded-xl bg-danger px-6 font-semibold text-space-950 transition hover:bg-red-400 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-danger;
+    }
+
+    .field {
+        @apply h-14 w-full rounded-xl border border-space-700 bg-space-950 px-4 text-base text-gray-100 outline-none transition placeholder:text-muted focus:border-star focus:ring-1 focus:ring-star;
+    }
+
+    .eyebrow {
+        @apply text-sm font-semibold tracking-[0.12em] text-star uppercase;
+    }
 }

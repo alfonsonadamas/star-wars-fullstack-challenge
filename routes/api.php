@@ -1,8 +1,15 @@
 <?php
 
-use Illuminate\Http\Request;
+use App\Http\Controllers\Api\StarshipController;
+use App\Http\Controllers\Api\SwapiController;
 use Illuminate\Support\Facades\Route;
 
-Route::get('/user', function (Request $request) {
-    return $request->user();
-})->middleware('auth:sanctum');
+Route::prefix('swapi')->group(function (): void {
+    Route::get('/films', [SwapiController::class, 'films']);
+    Route::get('/films/{film}/starships', [SwapiController::class, 'filmStarships'])
+        ->whereNumber('film');
+    Route::get('/starships/{starship}', [SwapiController::class, 'starship'])
+        ->whereNumber('starship');
+});
+
+Route::apiResource('starships', StarshipController::class);

@@ -35,4 +35,9 @@ return [
         ],
     ],
 
+    'swapi' => [
+        'base_url' => env('SWAPI_BASE_URL', 'https://swapi.info/api'),
+        'cache_ttl' => (int) env('SWAPI_CACHE_TTL', 3600),
+    ],
+
 ];

@@ -3,48 +3,52 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\StoreStarshipRequest;
+use App\Http\Requests\UpdateStarshipRequest;
+use App\Http\Resources\StarshipResource;
 use App\Models\Starship;
 use Illuminate\Http\Request;
+use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
+use Illuminate\Http\Response;
 
 class StarshipController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     */
-    public function index()
+    public function index(Request $request): AnonymousResourceCollection
     {
-        //
+        return StarshipResource::collection(
+            Starship::query()
+                ->when(
+                    $request->filled('swapi_id'),
+                    fn ($query) => $query->where('swapi_id', $request->integer('swapi_id')),
+                )
+                ->latest()
+                ->paginate(12),
+        );
     }
 
-    /**
-     * Store a newly created resource in storage.
-     */
-    public function store(Request $request)
+    public function store(StoreStarshipRequest $request): StarshipResource
     {
-        //
+        $starship = Starship::query()->create($request->validated());
+
+        return new StarshipResource($starship);
     }
 
-    /**
-     * Display the specified resource.
-     */
-    public function show(Starship $starship)
+    public function show(Starship $starship): StarshipResource
     {
-        //
+        return new StarshipResource($starship);
     }
 
-    /**
-     * Update the specified resource in storage.
-     */
-    public function update(Request $request, Starship $starship)
+    public function update(UpdateStarshipRequest $request, Starship $starship): StarshipResource
     {
-        //
+        $starship->update($request->validated());
+
+        return new StarshipResource($starship->refresh());
     }
 
-    /**
-     * Remove the specified resource from storage.
-     */
-    public function destroy(Starship $starship)
+    public function destroy(Starship $starship): Response
     {
-        //
+        $starship->delete();
+
+        return response()->noContent();
     }
 }
