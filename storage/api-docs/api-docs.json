@@ -1,0 +1,684 @@
+{
+    "openapi": "3.0.0",
+    "info": {
+        "title": "Star Wars Explorer API",
+        "description": "API para consultar información normalizada de SWAPI y administrar naves guardadas.",
+        "version": "1.0.0"
+    },
+    "servers": [
+        {
+            "url": "/api",
+            "description": "API de la aplicación"
+        }
+    ],
+    "paths": {
+        "/swapi/films": {
+            "get": {
+                "tags": [
+                    "SWAPI"
+                ],
+                "summary": "Listar películas",
+                "operationId": "listFilms",
+                "responses": {
+                    "200": {
+                        "description": "Películas normalizadas",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "required": [
+                                        "data"
+                                    ],
+                                    "properties": {
+                                        "data": {
+                                            "type": "array",
+                                            "items": {
+                                                "$ref": "#/components/schemas/Film"
+                                            }
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "502": {
+                        "description": "SWAPI no está disponible",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ApiMessage"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/swapi/films/{film}/starships": {
+            "get": {
+                "tags": [
+                    "SWAPI"
+                ],
+                "summary": "Listar las naves de una película",
+                "operationId": "listFilmStarships",
+                "parameters": [
+                    {
+                        "name": "film",
+                        "in": "path",
+                        "description": "ID de la película en SWAPI",
+                        "required": true,
+                        "schema": {
+                            "type": "integer",
+                            "example": 1,
+                            "minimum": 1
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Película y naves asociadas",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "required": [
+                                        "data"
+                                    ],
+                                    "properties": {
+                                        "data": {
+                                            "required": [
+                                                "film",
+                                                "starships"
+                                            ],
+                                            "properties": {
+                                                "film": {
+                                                    "$ref": "#/components/schemas/Film"
+                                                },
+                                                "starships": {
+                                                    "type": "array",
+                                                    "items": {
+                                                        "$ref": "#/components/schemas/ExternalStarship"
+                                                    }
+                                                }
+                                            },
+                                            "type": "object"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "502": {
+                        "description": "SWAPI no está disponible",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ApiMessage"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/swapi/starships/{starship}": {
+            "get": {
+                "tags": [
+                    "SWAPI"
+                ],
+                "summary": "Consultar una nave de SWAPI",
+                "operationId": "showExternalStarship",
+                "parameters": [
+                    {
+                        "name": "starship",
+                        "in": "path",
+                        "description": "ID de la nave en SWAPI",
+                        "required": true,
+                        "schema": {
+                            "type": "integer",
+                            "example": 10,
+                            "minimum": 1
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Datos principales de la nave",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "required": [
+                                        "data"
+                                    ],
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/components/schemas/ExternalStarship"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "502": {
+                        "description": "SWAPI no está disponible",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ApiMessage"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/starships": {
+            "get": {
+                "tags": [
+                    "Naves guardadas"
+                ],
+                "summary": "Listar naves guardadas",
+                "operationId": "listSavedStarships",
+                "parameters": [
+                    {
+                        "name": "swapi_id",
+                        "in": "query",
+                        "description": "Filtrar por ID externo de SWAPI",
+                        "required": false,
+                        "schema": {
+                            "type": "integer",
+                            "example": 10,
+                            "minimum": 1
+                        }
+                    },
+                    {
+                        "name": "page",
+                        "in": "query",
+                        "description": "Página del listado",
+                        "required": false,
+                        "schema": {
+                            "type": "integer",
+                            "example": 1,
+                            "minimum": 1
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Listado paginado",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "required": [
+                                        "data"
+                                    ],
+                                    "properties": {
+                                        "data": {
+                                            "type": "array",
+                                            "items": {
+                                                "$ref": "#/components/schemas/SavedStarship"
+                                            }
+                                        },
+                                        "links": {
+                                            "type": "object"
+                                        },
+                                        "meta": {
+                                            "type": "object"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            "post": {
+                "tags": [
+                    "Naves guardadas"
+                ],
+                "summary": "Guardar una nave",
+                "operationId": "createSavedStarship",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/SavedStarshipInput"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "Nave guardada",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "required": [
+                                        "data"
+                                    ],
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/components/schemas/SavedStarship"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Datos inválidos o nave duplicada",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ValidationError"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/starships/{id}": {
+            "get": {
+                "tags": [
+                    "Naves guardadas"
+                ],
+                "summary": "Consultar una nave guardada",
+                "operationId": "showSavedStarship",
+                "parameters": [
+                    {
+                        "$ref": "#/components/parameters/SavedStarshipId"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Nave guardada",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "required": [
+                                        "data"
+                                    ],
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/components/schemas/SavedStarship"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Nave no encontrada"
+                    }
+                }
+            },
+            "put": {
+                "tags": [
+                    "Naves guardadas"
+                ],
+                "summary": "Reemplazar una nave guardada",
+                "operationId": "replaceSavedStarship",
+                "parameters": [
+                    {
+                        "$ref": "#/components/parameters/SavedStarshipId"
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/SavedStarshipInput"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Nave actualizada",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "required": [
+                                        "data"
+                                    ],
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/components/schemas/SavedStarship"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Nave no encontrada"
+                    },
+                    "422": {
+                        "description": "Datos inválidos",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ValidationError"
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            "delete": {
+                "tags": [
+                    "Naves guardadas"
+                ],
+                "summary": "Eliminar una nave guardada",
+                "operationId": "deleteSavedStarship",
+                "parameters": [
+                    {
+                        "$ref": "#/components/parameters/SavedStarshipId"
+                    }
+                ],
+                "responses": {
+                    "204": {
+                        "description": "Nave eliminada"
+                    },
+                    "404": {
+                        "description": "Nave no encontrada"
+                    }
+                }
+            },
+            "patch": {
+                "tags": [
+                    "Naves guardadas"
+                ],
+                "summary": "Actualizar una nave guardada",
+                "operationId": "updateSavedStarship",
+                "parameters": [
+                    {
+                        "$ref": "#/components/parameters/SavedStarshipId"
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/SavedStarshipInput"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Nave actualizada",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "required": [
+                                        "data"
+                                    ],
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/components/schemas/SavedStarship"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Nave no encontrada"
+                    },
+                    "422": {
+                        "description": "Datos inválidos",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ValidationError"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    },
+    "components": {
+        "schemas": {
+            "Film": {
+                "required": [
+                    "id",
+                    "title",
+                    "episode_id",
+                    "director",
+                    "release_date",
+                    "starships_count"
+                ],
+                "properties": {
+                    "id": {
+                        "type": "integer",
+                        "example": 1
+                    },
+                    "title": {
+                        "type": "string",
+                        "example": "A New Hope"
+                    },
+                    "episode_id": {
+                        "type": "integer",
+                        "example": 4
+                    },
+                    "director": {
+                        "type": "string",
+                        "example": "George Lucas"
+                    },
+                    "release_date": {
+                        "type": "string",
+                        "format": "date",
+                        "example": "1977-05-25"
+                    },
+                    "starships_count": {
+                        "type": "integer",
+                        "example": 8
+                    }
+                },
+                "type": "object"
+            },
+            "ExternalStarship": {
+                "required": [
+                    "id",
+                    "name",
+                    "model",
+                    "manufacturer",
+                    "crew",
+                    "max_atmosphering_speed",
+                    "cargo_capacity"
+                ],
+                "properties": {
+                    "id": {
+                        "type": "integer",
+                        "example": 10
+                    },
+                    "name": {
+                        "type": "string",
+                        "example": "Millennium Falcon"
+                    },
+                    "model": {
+                        "type": "string",
+                        "example": "YT-1300 light freighter"
+                    },
+                    "manufacturer": {
+                        "type": "string",
+                        "example": "Corellian Engineering Corporation"
+                    },
+                    "crew": {
+                        "type": "string",
+                        "example": "4"
+                    },
+                    "max_atmosphering_speed": {
+                        "type": "string",
+                        "example": "1050"
+                    },
+                    "cargo_capacity": {
+                        "type": "string",
+                        "example": "100000"
+                    }
+                },
+                "type": "object"
+            },
+            "SavedStarship": {
+                "required": [
+                    "id",
+                    "swapi_id",
+                    "name",
+                    "max_atmosphering_speed",
+                    "cargo_capacity",
+                    "created_at",
+                    "updated_at"
+                ],
+                "properties": {
+                    "id": {
+                        "type": "integer",
+                        "example": 1
+                    },
+                    "swapi_id": {
+                        "type": "integer",
+                        "example": 10,
+                        "nullable": true
+                    },
+                    "name": {
+                        "type": "string",
+                        "example": "Millennium Falcon",
+                        "maxLength": 80
+                    },
+                    "max_atmosphering_speed": {
+                        "type": "integer",
+                        "example": 1050,
+                        "maximum": 999999,
+                        "minimum": 0
+                    },
+                    "cargo_capacity": {
+                        "type": "integer",
+                        "format": "int64",
+                        "example": 100000,
+                        "maximum": 999999999999999,
+                        "minimum": 0
+                    },
+                    "created_at": {
+                        "type": "string",
+                        "format": "date-time",
+                        "example": "2026-07-30T18:00:00.000000Z"
+                    },
+                    "updated_at": {
+                        "type": "string",
+                        "format": "date-time",
+                        "example": "2026-07-30T18:00:00.000000Z"
+                    }
+                },
+                "type": "object"
+            },
+            "SavedStarshipInput": {
+                "required": [
+                    "name",
+                    "max_atmosphering_speed",
+                    "cargo_capacity"
+                ],
+                "properties": {
+                    "swapi_id": {
+                        "type": "integer",
+                        "example": 10,
+                        "nullable": true,
+                        "minimum": 1
+                    },
+                    "name": {
+                        "type": "string",
+                        "example": "Millennium Falcon",
+                        "maxLength": 80
+                    },
+                    "max_atmosphering_speed": {
+                        "type": "integer",
+                        "example": 1050,
+                        "maximum": 999999,
+                        "minimum": 0
+                    },
+                    "cargo_capacity": {
+                        "type": "integer",
+                        "format": "int64",
+                        "example": 100000,
+                        "maximum": 999999999999999,
+                        "minimum": 0
+                    }
+                },
+                "type": "object"
+            },
+            "ApiMessage": {
+                "required": [
+                    "message"
+                ],
+                "properties": {
+                    "message": {
+                        "type": "string",
+                        "example": "No fue posible consultar la información de Star Wars."
+                    }
+                },
+                "type": "object"
+            },
+            "ValidationError": {
+                "required": [
+                    "message",
+                    "errors"
+                ],
+                "properties": {
+                    "message": {
+                        "type": "string",
+                        "example": "The name field is required."
+                    },
+                    "errors": {
+                        "type": "object",
+                        "example": {
+                            "name": [
+                                "The name field is required."
+                            ]
+                        },
+                        "additionalProperties": {
+                            "type": "array",
+                            "items": {
+                                "type": "string"
+                            }
+                        }
+                    }
+                },
+                "type": "object"
+            }
+        },
+        "parameters": {
+            "SavedStarshipId": {
+                "name": "id",
+                "in": "path",
+                "description": "ID local de la nave guardada",
+                "required": true,
+                "schema": {
+                    "type": "integer",
+                    "example": 1,
+                    "minimum": 1
+                }
+            }
+        }
+    },
+    "tags": [
+        {
+            "name": "SWAPI",
+            "description": "Consultas de películas y naves obtenidas desde SWAPI"
+        },
+        {
+            "name": "Naves guardadas",
+            "description": "CRUD de naves almacenadas en la base de datos local"
+        }
+    ]
+}

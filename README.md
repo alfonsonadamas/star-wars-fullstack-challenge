@@ -45,6 +45,12 @@ El frontend consume exclusivamente la API de Laravel. Laravel actúa como interm
 
 - [SWAPI.info](https://swapi.info/) como proveedor de información de Star Wars.
 
+### Documentación
+
+- OpenAPI 3.0
+- L5-Swagger
+- Swagger UI
+
 ## Arquitectura
 
 ```text
@@ -185,6 +191,34 @@ composer run dev
 
 Todas las respuestas se entregan en JSON.
 
+### Swagger
+
+La documentación interactiva de los endpoints está disponible en:
+
+```text
+http://127.0.0.1:8000/api/documentation
+```
+
+El documento OpenAPI en formato JSON está disponible en:
+
+```text
+http://127.0.0.1:8000/docs
+```
+
+Para regenerar la especificación después de modificar rutas, esquemas o contratos:
+
+```bash
+php artisan l5-swagger:generate
+```
+
+En producción se recomienda generar el documento durante el despliegue y mantener:
+
+```dotenv
+L5_SWAGGER_GENERATE_ALWAYS=false
+```
+
+De esta manera, Swagger UI sirve un documento previamente generado y no escanea el código en cada petición.
+
 ### Consulta de SWAPI
 
 | Método | Endpoint                            | Descripción                     |
@@ -248,6 +282,7 @@ Las pruebas cubren:
 - Actualización y eliminación.
 - Campos obligatorios y límites.
 - Prevención de duplicados.
+- Disponibilidad de Swagger UI y presencia de todas las operaciones OpenAPI.
 
 ## Calidad y compilación
 
@@ -267,6 +302,7 @@ Compilación para producción:
 
 ```bash
 npm run build
+php artisan l5-swagger:generate
 ```
 
 Antes de crear un commit se recomienda ejecutar:

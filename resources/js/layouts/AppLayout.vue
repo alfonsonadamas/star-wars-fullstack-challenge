@@ -1,6 +1,6 @@
 <script setup>
-import { ref } from 'vue';
-import AppSidebar from '../components/AppSidebar.vue';
+import { ref } from "vue";
+import AppSidebar from "../components/AppSidebar.vue";
 
 const menuOpen = ref(false);
 </script>
@@ -14,7 +14,7 @@ const menuOpen = ref(false);
             :aria-expanded="menuOpen"
             @click="menuOpen = !menuOpen"
         >
-            {{ menuOpen ? '×' : '☰' }}
+            {{ menuOpen ? "×" : "☰" }}
         </button>
 
         <AppSidebar :open="menuOpen" @navigate="menuOpen = false" />
@@ -26,8 +26,10 @@ const menuOpen = ref(false);
             @click="menuOpen = false"
         />
 
-        <main class="min-h-screen px-5 py-20 sm:px-8 lg:ml-72 lg:px-16 lg:py-16 xl:px-20">
-            <div class="mx-auto max-w-[1400px]">
+        <main
+            class="min-h-screen px-5 py-20 sm:px-8 lg:ml-72 lg:px-16 lg:py-16 xl:px-20"
+        >
+            <div class="mx-auto max-w-350">
                 <slot />
             </div>
         </main>

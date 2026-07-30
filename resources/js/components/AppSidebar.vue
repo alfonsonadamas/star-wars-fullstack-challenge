@@ -32,7 +32,7 @@ const currentSection = computed(() => {
 
 <template>
     <aside
-        class="fixed inset-y-0 left-0 z-40 w-72 border-r border-white/[0.03] bg-space-900 px-8 py-12 transition-transform duration-200 lg:translate-x-0"
+        class="fixed inset-y-0 left-0 z-40 w-72 border-r border-white/3 bg-space-900 px-8 py-12 transition-transform duration-200 lg:translate-x-0"
         :class="open ? 'translate-x-0' : '-translate-x-full'"
     >
         <RouterLink to="/movies" class="block" @click="$emit('navigate')">
@@ -55,7 +55,7 @@ const currentSection = computed(() => {
                 :class="
                     currentSection === item.section
                         ? 'bg-star-soft text-star'
-                        : 'text-muted hover:bg-white/[0.03] hover:text-white'
+                        : 'text-muted hover:bg-white/3 hover:text-white'
                 "
                 @click="$emit('navigate')"
             >
