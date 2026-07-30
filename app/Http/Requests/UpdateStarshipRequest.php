@@ -31,9 +31,9 @@ class UpdateStarshipRequest extends FormRequest
                 'min:1',
                 Rule::unique('starships', 'swapi_id')->ignore($this->route('starship')),
             ],
-            'name' => ['sometimes', 'required', 'string', 'max:120'],
-            'max_atmosphering_speed' => ['sometimes', 'required', 'integer', 'min:0'],
-            'cargo_capacity' => ['sometimes', 'required', 'integer', 'min:0'],
+            'name' => ['sometimes', 'required', 'string', 'max:80'],
+            'max_atmosphering_speed' => ['sometimes', 'required', 'integer', 'min:0', 'max:999999'],
+            'cargo_capacity' => ['sometimes', 'required', 'integer', 'min:0', 'max:999999999999999'],
         ];
     }
 }

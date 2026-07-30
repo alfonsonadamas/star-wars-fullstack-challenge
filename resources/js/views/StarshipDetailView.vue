@@ -1,6 +1,6 @@
 <script setup>
 import { onMounted, reactive, ref } from "vue";
-import { useRoute } from "vue-router";
+import { useRoute, useRouter } from "vue-router";
 import AppBreadcrumbs from "../components/AppBreadcrumbs.vue";
 import ConfirmDialog from "../components/ConfirmDialog.vue";
 import { errorMessage } from "../services/http";
@@ -8,6 +8,7 @@ import { starshipApi } from "../services/starshipApi";
 import { swapiApi } from "../services/swapiApi";
 
 const route = useRoute();
+const router = useRouter();
 const starship = ref(null);
 const savedRecord = ref(null);
 const loading = ref(true);
@@ -24,15 +25,29 @@ const form = reactive({
 
 function fillForm(data) {
     form.name = data.name;
-    form.max_atmosphering_speed =
-        data.max_atmosphering_speed === "n/a" ||
-        data.max_atmosphering_speed === "unknown"
-            ? ""
-            : String(data.max_atmosphering_speed).replaceAll(",", "");
+    form.max_atmosphering_speed = ["n/a", "unknown"].includes(
+        data.max_atmosphering_speed,
+    )
+        ? ""
+        : String(data.max_atmosphering_speed).replaceAll(",", "");
     form.cargo_capacity =
         data.cargo_capacity === "unknown"
             ? ""
             : String(data.cargo_capacity).replaceAll(",", "");
+}
+
+function limitNumericInput(field, event, maxDigits) {
+    form[field] = event.target.value.replace(/\D/g, "").slice(0, maxDigits);
+    event.target.value = form[field];
+}
+
+function goBack() {
+    if (window.history.state?.back) {
+        router.back();
+        return;
+    }
+
+    router.push({ name: "movies" });
 }
 
 async function loadStarship() {
@@ -102,11 +117,6 @@ async function removeStarship() {
     } finally {
         deleting.value = false;
     }
-}
-
-function resetForm() {
-    if (starship.value) fillForm(starship.value);
-    validationErrors.value = {};
 }
 
 onMounted(loadStarship);
@@ -202,8 +212,11 @@ onMounted(loadStarship);
                                 v-model.trim="form.name"
                                 class="field"
                                 required
-                                maxlength="120"
+                                maxlength="80"
                             />
+                            <span class="mt-2 block text-xs text-muted">
+                                {{ form.name.length }}/80 caracteres
+                            </span>
                             <span
                                 v-if="validationErrors.name"
                                 class="mt-2 block text-sm text-danger"
@@ -213,16 +226,28 @@ onMounted(loadStarship);
                         </label>
 
                         <label class="block">
-                            <span class="mb-2 block font-semibold"
-                                >Velocidad máxima</span
-                            >
+                            <span class="mb-2 block font-semibold">
+                                Velocidad máxima
+                            </span>
                             <input
-                                v-model="form.max_atmosphering_speed"
+                                :value="form.max_atmosphering_speed"
                                 class="field"
-                                type="number"
-                                min="0"
+                                type="text"
+                                inputmode="numeric"
+                                pattern="[0-9]*"
+                                maxlength="6"
                                 required
+                                @input="
+                                    limitNumericInput(
+                                        'max_atmosphering_speed',
+                                        $event,
+                                        6,
+                                    )
+                                "
                             />
+                            <span class="mt-2 block text-xs text-muted">
+                                Máximo 6 dígitos
+                            </span>
                             <span
                                 v-if="validationErrors.max_atmosphering_speed"
                                 class="mt-2 block text-sm text-danger"
@@ -232,16 +257,28 @@ onMounted(loadStarship);
                         </label>
 
                         <label class="block">
-                            <span class="mb-2 block font-semibold"
-                                >Capacidad de carga</span
-                            >
+                            <span class="mb-2 block font-semibold">
+                                Capacidad de carga
+                            </span>
                             <input
-                                v-model="form.cargo_capacity"
+                                :value="form.cargo_capacity"
                                 class="field"
-                                type="number"
-                                min="0"
+                                type="text"
+                                inputmode="numeric"
+                                pattern="[0-9]*"
+                                maxlength="15"
                                 required
+                                @input="
+                                    limitNumericInput(
+                                        'cargo_capacity',
+                                        $event,
+                                        15,
+                                    )
+                                "
                             />
+                            <span class="mt-2 block text-xs text-muted">
+                                Máximo 15 dígitos
+                            </span>
                             <span
                                 v-if="validationErrors.cargo_capacity"
                                 class="mt-2 block text-sm text-danger"
@@ -255,11 +292,7 @@ onMounted(loadStarship);
                 <div
                     class="mt-auto flex flex-col-reverse justify-between gap-4 pt-10 sm:flex-row"
                 >
-                    <button
-                        class="btn-secondary"
-                        type="button"
-                        @click="resetForm"
-                    >
+                    <button class="btn-secondary" type="button" @click="goBack">
                         Cancelar
                     </button>
                     <button
@@ -279,82 +312,95 @@ onMounted(loadStarship);
             </form>
 
             <aside class="panel self-start p-6 md:p-8">
-                <div class="flex items-center justify-between gap-4">
-                    <h2 class="text-2xl font-semibold">Nave guardada</h2>
-                    <span
-                        class="rounded-full px-5 py-2 text-xs font-semibold"
-                        :class="
-                            savedRecord
-                                ? 'bg-emerald-950 text-success'
-                                : 'bg-space-800 text-muted'
-                        "
-                    >
-                        {{ savedRecord ? "Guardada" : "Sin guardar" }}
-                    </span>
-                </div>
-                <p class="mt-8 text-muted">
-                    Vista previa del recurso almacenado mediante tu API CRUD.
-                </p>
+                <template v-if="savedRecord">
+                    <div class="flex items-center justify-between gap-4">
+                        <h2 class="text-2xl font-semibold">Nave guardada</h2>
+                        <span
+                            class="rounded-full bg-emerald-950 px-5 py-2 text-xs font-semibold text-success"
+                        >
+                            Guardada
+                        </span>
+                    </div>
+                    <p class="mt-8 text-muted">
+                        Vista previa de la nave guardada
+                    </p>
 
-                <dl class="mt-6 space-y-8 rounded-xl bg-space-800 p-6">
-                    <div class="flex justify-between gap-4">
-                        <dt class="text-xs font-semibold text-muted uppercase">
-                            ID
-                        </dt>
-                        <dd>
-                            {{
-                                savedRecord
-                                    ? `#SW-${String(savedRecord.id).padStart(4, "0")}`
-                                    : "—"
-                            }}
-                        </dd>
-                    </div>
-                    <div class="flex justify-between gap-4">
-                        <dt class="text-xs font-semibold text-muted uppercase">
-                            Nombre
-                        </dt>
-                        <dd class="text-right">{{ form.name }}</dd>
-                    </div>
-                    <div class="flex justify-between gap-4">
-                        <dt class="text-xs font-semibold text-muted uppercase">
-                            Velocidad
-                        </dt>
-                        <dd>{{ form.max_atmosphering_speed || 0 }} km/h</dd>
-                    </div>
-                    <div class="flex justify-between gap-4">
-                        <dt class="text-xs font-semibold text-muted uppercase">
-                            Carga
-                        </dt>
-                        <dd>{{ form.cargo_capacity || 0 }} kg</dd>
-                    </div>
-                </dl>
+                    <dl class="mt-6 space-y-8 rounded-xl bg-space-800 p-6">
+                        <div class="flex justify-between gap-4">
+                            <dt
+                                class="text-xs font-semibold text-muted uppercase"
+                            >
+                                ID
+                            </dt>
+                            <dd>
+                                #SW-{{
+                                    String(savedRecord.id).padStart(4, "0")
+                                }}
+                            </dd>
+                        </div>
+                        <div class="flex justify-between gap-4">
+                            <dt
+                                class="text-xs font-semibold text-muted uppercase"
+                            >
+                                Nombre
+                            </dt>
+                            <dd class="text-right">{{ form.name }}</dd>
+                        </div>
+                        <div class="flex justify-between gap-4">
+                            <dt
+                                class="text-xs font-semibold text-muted uppercase"
+                            >
+                                Velocidad
+                            </dt>
+                            <dd>{{ form.max_atmosphering_speed || 0 }} km/h</dd>
+                        </div>
+                        <div class="flex justify-between gap-4">
+                            <dt
+                                class="text-xs font-semibold text-muted uppercase"
+                            >
+                                Carga
+                            </dt>
+                            <dd>{{ form.cargo_capacity || 0 }} kg</dd>
+                        </div>
+                    </dl>
 
-                <div class="mt-6 rounded-xl bg-star-soft p-5">
-                    <span
-                        class="block text-xs font-semibold text-star uppercase"
-                        >API local</span
-                    >
-                    <code class="mt-3 block text-gray-100">
-                        {{
-                            savedRecord
-                                ? `GET /api/starships/${savedRecord.id}`
-                                : "POST /api/starships"
-                        }}
-                    </code>
-                    <span class="mt-2 block text-sm text-muted">
-                        {{ savedRecord ? "200" : "201" }} · application/json
-                    </span>
-                </div>
+                    <div class="mt-6 rounded-xl bg-star-soft p-5">
+                        <span
+                            class="block text-xs font-semibold text-star uppercase"
+                        >
+                            API local
+                        </span>
+                        <code class="mt-3 block text-gray-100">
+                            GET /api/starships/{{ savedRecord.id }}
+                        </code>
+                        <span class="mt-2 block text-sm text-muted">
+                            200 · application/json
+                        </span>
+                    </div>
 
-                <div class="mt-6">
                     <button
-                        class="btn-danger"
+                        class="btn-danger mt-6"
                         type="button"
-                        :disabled="!savedRecord"
                         @click="deleteDialogOpen = true"
                     >
                         Eliminar
                     </button>
+                </template>
+
+                <div v-else class="py-10 text-center">
+                    <div
+                        class="mx-auto flex size-14 items-center justify-center rounded-full bg-star-soft text-2xl text-star"
+                        aria-hidden="true"
+                    >
+                        +
+                    </div>
+                    <h2 class="mt-5 text-2xl font-semibold">
+                        Esta nave aún no está guardada
+                    </h2>
+                    <p class="mx-auto mt-3 max-w-sm leading-7 text-muted">
+                        Completa los tres campos y agrégala para verla en Naves
+                        guardadas.
+                    </p>
                 </div>
             </aside>
         </div>

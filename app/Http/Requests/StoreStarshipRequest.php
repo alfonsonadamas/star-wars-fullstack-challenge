@@ -24,9 +24,9 @@ class StoreStarshipRequest extends FormRequest
     {
         return [
             'swapi_id' => ['nullable', 'integer', 'min:1', 'unique:starships,swapi_id'],
-            'name' => ['required', 'string', 'max:120'],
-            'max_atmosphering_speed' => ['required', 'integer', 'min:0'],
-            'cargo_capacity' => ['required', 'integer', 'min:0'],
+            'name' => ['required', 'string', 'max:80'],
+            'max_atmosphering_speed' => ['required', 'integer', 'min:0', 'max:999999'],
+            'cargo_capacity' => ['required', 'integer', 'min:0', 'max:999999999999999'],
         ];
     }
 }

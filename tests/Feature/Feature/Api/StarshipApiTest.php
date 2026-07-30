@@ -95,4 +95,20 @@ class StarshipApiTest extends TestCase
                 'cargo_capacity',
             ]);
     }
+
+    public function test_it_rejects_values_longer_than_the_form_limits(): void
+    {
+        $this->postJson('/api/starships', [
+            'swapi_id' => 10,
+            'name' => str_repeat('A', 81),
+            'max_atmosphering_speed' => 1000000,
+            'cargo_capacity' => 1000000000000000,
+        ])
+            ->assertUnprocessable()
+            ->assertJsonValidationErrors([
+                'name',
+                'max_atmosphering_speed',
+                'cargo_capacity',
+            ]);
+    }
 }

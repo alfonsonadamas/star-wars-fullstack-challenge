@@ -53,7 +53,7 @@ onMounted(loadMovies);
     <AppBreadcrumbs :items="[{ label: 'Catálogo' }, { label: 'Películas' }]" />
 
     <header class="mt-12">
-        <h1 class="page-title">Películas de la galaxia</h1>
+        <h1 class="page-title">Películas</h1>
         <p class="page-description">
             Explora la saga, revisa sus datos principales y consulta las naves
             que aparecen en cada episodio.
