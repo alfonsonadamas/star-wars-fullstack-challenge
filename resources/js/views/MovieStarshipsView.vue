@@ -98,6 +98,7 @@ onMounted(loadStarships);
                 :to="{
                     name: 'starship-detail',
                     params: { starshipId: starship.id },
+                    query: { film: movie.id },
                 }"
                 class="panel group flex min-h-64 flex-col p-6 transition hover:-translate-y-1 hover:border-star/60 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-star"
             >

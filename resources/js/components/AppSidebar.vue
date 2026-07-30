@@ -15,7 +15,7 @@ const route = useRoute();
 
 const items = [
     { label: "Películas", to: "/movies", section: "movies" },
-    { label: "Naves", to: "/movies/1/starships", section: "starships" },
+    { label: "Naves", to: "/starships", section: "starships" },
     { label: "Naves guardadas", to: "/saved-starships", section: "saved" },
 ];
 

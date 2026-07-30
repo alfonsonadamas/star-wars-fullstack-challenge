@@ -1,30 +1,36 @@
-import { createRouter, createWebHistory } from 'vue-router';
-import MoviesView from '../views/MoviesView.vue';
-import MovieStarshipsView from '../views/MovieStarshipsView.vue';
-import StarshipDetailView from '../views/StarshipDetailView.vue';
-import SavedStarshipsView from '../views/SavedStarshipsView.vue';
+import { createRouter, createWebHistory } from "vue-router";
+import MoviesView from "../views/MoviesView.vue";
+import MovieStarshipsView from "../views/MovieStarshipsView.vue";
+import StarshipsLandingView from "../views/StarshipsLandingView.vue";
+import StarshipDetailView from "../views/StarshipDetailView.vue";
+import SavedStarshipsView from "../views/SavedStarshipsView.vue";
 
 const router = createRouter({
     history: createWebHistory(),
     routes: [
-        { path: '/', redirect: '/movies' },
-        { path: '/movies', name: 'movies', component: MoviesView },
+        { path: "/", redirect: "/movies" },
+        { path: "/movies", name: "movies", component: MoviesView },
         {
-            path: '/movies/:movieId/starships',
-            name: 'movie-starships',
+            path: "/movies/:movieId/starships",
+            name: "movie-starships",
             component: MovieStarshipsView,
         },
         {
-            path: '/starships/:starshipId',
-            name: 'starship-detail',
+            path: "/starships",
+            name: "starships",
+            component: StarshipsLandingView,
+        },
+        {
+            path: "/starships/:starshipId",
+            name: "starship-detail",
             component: StarshipDetailView,
         },
         {
-            path: '/saved-starships',
-            name: 'saved-starships',
+            path: "/saved-starships",
+            name: "saved-starships",
             component: SavedStarshipsView,
         },
-        { path: '/:pathMatch(.*)*', redirect: '/movies' },
+        { path: "/:pathMatch(.*)*", redirect: "/movies" },
     ],
     scrollBehavior: () => ({ top: 0 }),
 });

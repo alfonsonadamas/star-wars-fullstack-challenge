@@ -1,5 +1,5 @@
 <script setup>
-import { onMounted, reactive, ref } from "vue";
+import { computed, onMounted, reactive, ref } from "vue";
 import { useRoute, useRouter } from "vue-router";
 import AppBreadcrumbs from "../components/AppBreadcrumbs.vue";
 import ConfirmDialog from "../components/ConfirmDialog.vue";
@@ -21,6 +21,14 @@ const form = reactive({
     name: "",
     max_atmosphering_speed: "",
     cargo_capacity: "",
+});
+
+const starshipsBackRoute = computed(() => {
+    const filmId = Number(route.query.film);
+
+    return Number.isInteger(filmId) && filmId > 0
+        ? { name: "movie-starships", params: { movieId: filmId } }
+        : { name: "starships" };
 });
 
 function fillForm(data) {
@@ -125,7 +133,7 @@ onMounted(loadStarship);
 <template>
     <AppBreadcrumbs
         :items="[
-            { label: 'Naves', to: '/movies/1/starships' },
+            { label: 'Naves', to: starshipsBackRoute },
             { label: starship?.name ?? 'Detalle' },
         ]"
     />

@@ -177,6 +177,7 @@ composer run dev
 | -------------------------- | --------------------------------- |
 | `/movies`                  | Catálogo de películas             |
 | `/movies/{film}/starships` | Naves asociadas con una película  |
+| `/starships`               | Orientación para elegir película  |
 | `/starships/{starship}`    | Detalle y formulario de una nave  |
 | `/saved-starships`         | Administración de naves guardadas |
 
