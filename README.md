@@ -1,58 +1,327 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
+# Star Wars Explorer
 
-<p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
+Aplicación full-stack desarrollada como prueba técnica para consultar películas y naves de Star Wars, revisar sus datos principales y administrar una colección local mediante una API REST.
 
-## About Laravel
+El frontend consume exclusivamente la API de Laravel. Laravel actúa como intermediario ante SWAPI, normaliza sus respuestas y mantiene separado el proveedor externo de la interfaz. Las naves guardadas se almacenan en una base de datos propia.
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+## Funcionalidades
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+- Consulta de películas disponibles en SWAPI.
+- Búsqueda de películas por título o director.
+- Listado de las naves asociadas con una película.
+- Consulta de datos principales de una nave.
+- Formulario editable con validaciones en frontend y backend.
+- Creación, consulta, actualización y eliminación de naves guardadas.
+- Detección de registros existentes mediante el identificador de SWAPI.
+- Prevención de registros duplicados.
+- Caché temporal de las respuestas externas.
+- Estados de carga, error y contenido vacío.
+- Diálogo propio para confirmar eliminaciones.
+- Interfaz responsive basada en el diseño de la prueba.
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+## Tecnologías
 
-## Learning Laravel
+### Backend
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework.
+- PHP 8.3
+- Laravel 13
+- Eloquent ORM
+- Laravel HTTP Client
+- PHPUnit
+- Laravel Pint
+- MySQL 8
+- Amazon RDS para la base de datos de producción
 
-In addition, [Laracasts](https://laracasts.com) contains thousands of video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+### Frontend
 
-You can also watch bite-sized lessons with real-world projects on [Laravel Learn](https://laravel.com/learn), where you will be guided through building a Laravel application from scratch while learning PHP fundamentals.
+- Vue 3
+- Vue Router
+- Axios
+- Tailwind CSS 4
+- Vite
+- Prettier
 
-## Agentic Development
+### Servicios externos
 
-Laravel's predictable structure and conventions make it ideal for AI coding agents like Claude Code, Cursor, and GitHub Copilot. Install [Laravel Boost](https://laravel.com/docs/ai) to supercharge your AI workflow:
+- [SWAPI.info](https://swapi.info/) como proveedor de información de Star Wars.
 
-```bash
-composer require laravel/boost --dev
+## Arquitectura
 
-php artisan boost:install
+```text
+Vue
+├── Views
+├── Components
+└── API services (Axios)
+        │
+        ▼
+Laravel API
+├── SWAPI Controller → SWAPI Service → Cache → SWAPI
+└── Starship Controller → Form Requests → Eloquent → Database
 ```
 
-Boost provides your agent 15+ tools and skills that help agents build Laravel applications while following best practices.
+Vue no consulta SWAPI directamente. El backend ofrece un contrato estable, selecciona los campos utilizados por la aplicación y centraliza los tiempos de espera, reintentos, manejo de errores y caché.
 
-## Contributing
+## Requisitos
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+- PHP 8.3 o superior.
+- Composer 2.
+- Node.js 22.18 o superior recomendado.
+- npm 10 o superior.
+- MySQL 8.
 
-## Code of Conduct
+También deben estar habilitadas las extensiones de PHP requeridas por Laravel y el controlador `pdo_mysql`.
 
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
+## Instalación
 
-## Security Vulnerabilities
+Clona el repositorio:
 
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
+```bash
+git clone https://github.com/alfonsonadamas/star-wars-fullstack-challenge.git
+cd star-wars-fullstack-challenge
+```
 
-## License
+Instala las dependencias:
 
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+```bash
+composer install
+npm install
+```
+
+Crea el archivo de entorno y genera la clave:
+
+### Windows PowerShell
+
+```powershell
+Copy-Item .env.example .env
+php artisan key:generate
+```
+
+### macOS o Linux
+
+```bash
+cp .env.example .env
+php artisan key:generate
+```
+
+## Base de datos
+
+Configura `.env` sin compartir las credenciales:
+
+```dotenv
+DB_CONNECTION=mysql
+DB_HOST=127.0.0.1
+DB_PORT=3306
+DB_DATABASE=star_wars
+DB_USERNAME=usuario
+DB_PASSWORD=contraseña
+```
+
+La aplicación utiliza una instancia MySQL alojada en Amazon RDS para producción. Las credenciales no se incluyen en el repositorio ni se comparten en archivos públicos. Si se requiere acceso a la base de datos de producción, deben solicitarse directamente al responsable del proyecto.
+
+Aplica las migraciones:
+
+```bash
+php artisan migrate
+```
+
+Las migraciones crean las tablas utilizadas por sesiones, caché, colas y naves guardadas.
+
+## Configuración de SWAPI
+
+La integración funciona con los valores incluidos en `.env.example`:
+
+```dotenv
+SWAPI_BASE_URL=https://swapi.info/api
+SWAPI_CACHE_TTL=3600
+```
+
+`SWAPI_CACHE_TTL` representa la duración de la caché en segundos. Si una entrada existe y sigue vigente, Laravel responde desde la caché. Cuando no existe o expiró, consulta SWAPI y guarda el nuevo resultado.
+
+Para limpiar manualmente la caché:
+
+```bash
+php artisan cache:clear
+```
+
+## Ejecución en desarrollo
+
+La opción sencilla utiliza dos terminales.
+
+Terminal del backend:
+
+```bash
+php artisan serve
+```
+
+Terminal del frontend:
+
+```bash
+npm run dev
+```
+
+Después abre:
+
+```text
+http://127.0.0.1:8000/movies
+```
+
+Laravel también incluye un comando que levanta servidor, Vite, cola y logs:
+
+```bash
+composer run dev
+```
+
+## Rutas de la interfaz
+
+| Ruta                       | Descripción                       |
+| -------------------------- | --------------------------------- |
+| `/movies`                  | Catálogo de películas             |
+| `/movies/{film}/starships` | Naves asociadas con una película  |
+| `/starships/{starship}`    | Detalle y formulario de una nave  |
+| `/saved-starships`         | Administración de naves guardadas |
+
+## API
+
+Todas las respuestas se entregan en JSON.
+
+### Consulta de SWAPI
+
+| Método | Endpoint                            | Descripción                     |
+| ------ | ----------------------------------- | ------------------------------- |
+| `GET`  | `/api/swapi/films`                  | Lista de películas normalizadas |
+| `GET`  | `/api/swapi/films/{film}/starships` | Película y sus naves            |
+| `GET`  | `/api/swapi/starships/{starship}`   | Datos principales de una nave   |
+
+Si SWAPI no responde, Laravel devuelve `502 Bad Gateway` con un mensaje controlado.
+
+### Naves guardadas
+
+| Método   | Endpoint              | Descripción             |
+| -------- | --------------------- | ----------------------- |
+| `GET`    | `/api/starships`      | Listado paginado        |
+| `POST`   | `/api/starships`      | Crear un registro       |
+| `GET`    | `/api/starships/{id}` | Consultar por ID local  |
+| `PATCH`  | `/api/starships/{id}` | Actualizar parcialmente |
+| `PUT`    | `/api/starships/{id}` | Actualizar un registro  |
+| `DELETE` | `/api/starships/{id}` | Eliminar un registro    |
+
+Es posible buscar si una nave externa ya fue guardada:
+
+```http
+GET /api/starships?swapi_id=10
+```
+
+Ejemplo de creación:
+
+```json
+{
+    "swapi_id": 10,
+    "name": "Millennium Falcon",
+    "max_atmosphering_speed": 1050,
+    "cargo_capacity": 100000
+}
+```
+
+Los límites aplicados son:
+
+- Nombre: máximo 80 caracteres.
+- Velocidad: entero entre 0 y 999999.
+- Capacidad de carga: entero entre 0 y 999999999999999.
+- `swapi_id`: único cuando está presente.
+
+## Pruebas
+
+Ejecuta todas las pruebas:
+
+```bash
+php artisan test
+```
+
+Los tests utilizan SQLite en memoria. La integración externa se simula con `Http::fake()`, por lo que no consume SWAPI ni modifica la base de datos configurada en `.env`.
+
+Las pruebas cubren:
+
+- Normalización de películas y naves.
+- Creación, listado y consulta por ID.
+- Filtrado por identificador de SWAPI.
+- Actualización y eliminación.
+- Campos obligatorios y límites.
+- Prevención de duplicados.
+
+## Calidad y compilación
+
+Formato del backend:
+
+```bash
+php vendor/bin/pint
+```
+
+Formato del frontend:
+
+```bash
+npx prettier --write resources/js
+```
+
+Compilación para producción:
+
+```bash
+npm run build
+```
+
+Antes de crear un commit se recomienda ejecutar:
+
+```bash
+php artisan test
+npm run build
+```
+
+## Decisiones técnicas
+
+- **Backend intermediario:** desacopla Vue de SWAPI y centraliza errores y caché.
+- **Controladores pequeños:** la integración externa vive en `SwapiService`.
+- **Form Requests:** la validación no depende únicamente del navegador.
+- **API Resources:** mantienen estable la estructura JSON del CRUD.
+- **Identificador externo separado:** `swapi_id` relaciona el recurso externo sin reemplazar el ID local.
+- **Índice único:** evita guardar varias veces la misma nave de SWAPI.
+- **Sin autenticación:** la prueba administra una colección global y no define usuarios propietarios.
+- **Estado local sencillo:** no se añadió Pinia porque el alcance no requiere estado global complejo.
+
+## Seguridad
+
+- `.env` está excluido de Git.
+- No deben publicarse credenciales de base de datos.
+- Las credenciales de Amazon RDS deben solicitarse directamente al responsable del proyecto mediante un canal privado.
+- En producción, `APP_DEBUG` debe configurarse como `false`.
+- Una base de datos remota debe aceptar conexiones únicamente desde orígenes autorizados.
+- No se recomienda exponer MySQL públicamente a `0.0.0.0/0`.
+
+## Estado del despliegue
+
+La infraestructura de producción se despliega en Amazon Web Services:
+
+```text
+Internet
+   │
+   ▼
+Amazon EC2
+Laravel + Vue + servidor web
+   │
+   ▼
+Amazon RDS
+MySQL
+```
+
+- **Amazon EC2:** ejecuta la aplicación Laravel, sirve el frontend compilado de Vue y expone la API.
+- **Amazon RDS:** aloja la base de datos MySQL utilizada por el CRUD de naves guardadas.
+- **Security Groups:** restringen la conexión de RDS para que sólo los orígenes autorizados puedan utilizar el puerto de MySQL.
+- **Credenciales:** se mantienen fuera del repositorio y deben solicitarse directamente al responsable del proyecto cuando sea necesario trabajar con producción.
+
+La URL pública se añadirá después de completar la configuración final de EC2:
+
+```text
+Producción: pendiente
+```
+
+## Repositorio
+
+[github.com/alfonsonadamas/star-wars-fullstack-challenge](https://github.com/alfonsonadamas/star-wars-fullstack-challenge)

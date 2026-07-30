@@ -1,6 +1,6 @@
 <script setup>
-import { computed } from 'vue';
-import { useRoute } from 'vue-router';
+import { computed } from "vue";
+import { useRoute } from "vue-router";
 
 defineProps({
     open: {
@@ -9,20 +9,24 @@ defineProps({
     },
 });
 
-defineEmits(['navigate']);
+defineEmits(["navigate"]);
 
 const route = useRoute();
 
 const items = [
-    { label: 'Películas', to: '/movies', section: 'movies' },
-    { label: 'Naves', to: '/movies/1/starships', section: 'starships' },
-    { label: 'Naves guardadas', to: '/saved-starships', section: 'saved' },
+    { label: "Películas", to: "/movies", section: "movies" },
+    { label: "Naves", to: "/movies/1/starships", section: "starships" },
+    { label: "Naves guardadas", to: "/saved-starships", section: "saved" },
 ];
 
 const currentSection = computed(() => {
-    if (route.path.startsWith('/saved-starships')) return 'saved';
-    if (route.path.includes('/starships') || route.path.startsWith('/starships')) return 'starships';
-    return 'movies';
+    if (route.path.startsWith("/saved-starships")) return "saved";
+    if (
+        route.path.includes("/starships") ||
+        route.path.startsWith("/starships")
+    )
+        return "starships";
+    return "movies";
 });
 </script>
 
@@ -32,8 +36,14 @@ const currentSection = computed(() => {
         :class="open ? 'translate-x-0' : '-translate-x-full'"
     >
         <RouterLink to="/movies" class="block" @click="$emit('navigate')">
-            <span class="block text-2xl font-bold tracking-[0.04em] text-white">HYPERSPACE</span>
-            <span class="mt-4 block text-xs font-semibold tracking-[0.16em] text-star uppercase">Star Wars Data</span>
+            <span
+                class="block text-2xl font-bold tracking-[0.04em] text-white uppercase"
+                >El Rincon del Mandalorian</span
+            >
+            <span
+                class="mt-4 block text-xs font-semibold tracking-[0.16em] text-star uppercase"
+                >Star Wars Data</span
+            >
         </RouterLink>
 
         <nav class="mt-20 space-y-4" aria-label="Navegación principal">
