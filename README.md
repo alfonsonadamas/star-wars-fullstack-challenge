@@ -356,7 +356,7 @@ MySQL
 La URL pública se añadirá después de completar la configuración final de EC2:
 
 ```text
-Producción: pendiente
+Producción: (http://54.92.216.118/)
 ```
 
 ## Repositorio
